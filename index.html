@@ -138,7 +138,6 @@
       <div id="dPhotos" class="photos"></div>
     </div>
     <div class="bar"><button id="pdfBtn" class="primary">📄 Run sheet (PDF)</button></div>
-    <div class="bar hidden" id="detBar"><a id="detLink" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:14px;border:1px solid var(--blue);border-radius:4px;color:var(--blue);font-weight:600;text-decoration:none">📊 Detailed run sheet – values read from photos</a></div>
     <div class="bar"><button id="editBtn">Edit / add photos</button></div>
   </section>
 
@@ -329,7 +328,6 @@ async function openDetail(id){
   $("dCode").textContent = p.code ? "Code: "+p.code : "No product code";
   $("dMeta").textContent = "Last updated "+fmtDT(p.updated_at)+(p.operator?" by "+p.operator:"");
   $("dNotes").textContent = p.notes || "—";
-  $("detBar").classList.toggle("hidden", !p.run_sheet_url); if(p.run_sheet_url) $("detLink").href = p.run_sheet_url;
   $("pdfBtn").parentElement.classList.toggle("hidden", MODE!=="direct");
   $("dPhotos").innerHTML = p.photos.length ? p.photos.map((f,i)=>`
     <div class="ph"><img src="${photoSrc(f)}" data-i="${i}" alt="">
@@ -363,7 +361,6 @@ $("pdfBtn").onclick = async()=>{
     y+=4; doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text("Notes",M,y); y+=6;
     doc.setFont("helvetica","normal"); doc.setFontSize(10);
     const lines=doc.splitTextToSize(p.notes||"\u2014",W-2*M); doc.text(lines,M,y); y+=lines.length*5+6;
-    if(p.run_sheet_url){ doc.setTextColor(0,92,185); doc.textWithLink("Detailed run sheet (values read from photos)",M,y,{url:p.run_sheet_url}); doc.setTextColor(30); y+=8; }
     for(const [i,f] of p.photos.entries()){
       const src=photoSrc(f); if(!src) continue;
       const [iw,ih]=await imgSize(src); let w=W-2*M, h=w*ih/iw; if(h>118){ h=118; w=h*iw/ih; }
