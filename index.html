@@ -211,7 +211,7 @@ if (MODE === "direct") {
                 .order("run_date",{ascending:false,nullsFirst:false}).order("updated_at",{ascending:false})),
     get: async id => {
       const p = chk(await sb.from("ns_products").select("*").eq("id",id).single());
-      p.photos = chk(await sb.from("ns_photos").select("id,caption,data_url,path,created_at").eq("product_id",id).order("created_at"));
+      p.photos = chk(await sb.from("ns_photos").select("id,caption,data_url,created_at").eq("product_id",id).order("created_at"));
       return p;
     },
     save: async (id,row) => id ? (chk(await sb.from("ns_products").update(row).eq("id",id)), id)
@@ -247,7 +247,7 @@ if (MODE === "direct") {
     list: () => sql(`select * from public.ns_product_list order by run_date desc nulls last, updated_at desc`),
     get: async id => {
       const [p] = await sql(`select * from public.ns_products where id=${L(id)}`);
-      p.photos = await sql(`select id,caption,data_url,path,created_at from public.ns_photos where product_id=${L(id)} order by created_at`);
+      p.photos = await sql(`select id,caption,data_url,created_at from public.ns_photos where product_id=${L(id)} order by created_at`);
       return p;
     },
     save: async (id,r) => {
@@ -263,7 +263,7 @@ if (MODE === "direct") {
     delProduct: id => sql(`delete from public.ns_products where id=${L(id)}`),
   };
 }
-const photoSrc = p => p.preview || p.data_url || (p.path ? SB_URL+"/storage/v1/object/public/ns-hmi-photos/"+p.path : "");
+const photoSrc = p => p.preview || p.data_url || "";
 
 /* ======================= UI ======================= */
 let rows = [], current = null, edit = null;
