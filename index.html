@@ -108,6 +108,7 @@
       <div class="brand">Pre Preg Line 3</div>
       <h1 id="title">Product Settings</h1>
     </div>
+    <button id="qrBtn" class="ghost" title="Share app" aria-label="Show QR code" style="font-size:22px;padding:6px 4px">▦</button>
     <button id="opBtn" class="ghost"></button>
   </div>
   
@@ -183,6 +184,15 @@
   <div id="mText" style="margin-bottom:12px"></div>
   <input id="mInput" class="hidden">
   <div class="bar"><button id="mNo">Cancel</button><button id="mYes" class="primary">OK</button></div>
+</div></div>
+
+<div id="qrModal" class="modal hidden"><div class="box" style="text-align:center">
+  <div class="cap-h" style="margin-bottom:4px">Share the app</div>
+  <div style="font-family:Outfit,sans-serif;font-weight:700;font-size:18px;color:var(--navy);margin-bottom:10px">Scan with your phone camera</div>
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoCAIAAABkZftOAAAFQUlEQVR42u3d4Y0bOwyF0etgC0tnQTpLZ5MKFogDcUiOz/n9nmN7/UECCGle13UFuNcPXwEID4QHCA+EBwgPhAcID4QHCA+EB8IDhAfCA4QH23y9+z+8fv5e8cGuP79KX7/6e/ju/b/77556na6/y1N/b1Y8sNUE4QHCA+EBwgPhATk8x0vT3CzFc57vXufdz3VqbtY1Jzz1fqp/D9t/b1Y8sNUE4QHCA+EBwgPhAblpjpfiucepuc2Wedq7c8Xv/vvt5wa3/96seGCrCcIDhAfCA4QHwgMydI5HbpnXdZ2vO/V+rHiA8EB4gPBAeIDwQHhAzPEyZ07VNa+rfh3zPSseCA8QHggPhAcID4QHZPQcb8vcpvr+yep7Pr/7nqvP6U2b7235vVnxQHggPEB4IDxAeCA8IDfN8brmYBn2nLdTc6qnvh+/NyseCA+EBwgPhAcID4QH/JPXdV2f9YEPzX+qz31tuVdz+7k4Kx4IDxAeCA8QHggPEB7kIefxTt2jmKbzdafmS9POg1W/n66/77TfjxUPbDUB4YHwAOGB8EB4QB7yfLwcmpNUzw+r51TV88N333/1+brq5+B1/R1PfS4rHthqgvAA4YHwAOGB8IDcdK/m9nN6XXPC6nssp32urnOJp74fKx7YagLCA+EBwgPhgfCALDuP9+7co3qusuU+xmlztlPn+rbM9+I8HthqAsID4QHCA+EBwoO4VzM3zlUy7Hlo0+aZ1fO9LU59D1Y8sNUEhAfCA+EBwgPhAWm+V3PLPY3V86Wueyy7zgc+9Z7SrvdjxQNbTRAeIDwQHiA8EB6Qm56PVz0X6noeWvVcq+t84LT7MKedq6z+fqx4YKsJwgOEB8IDhAfCAzL0Xs1p56m2zOWq50vT5o1ZMk+24oGtJiA8EB4IDxAeCA/Iw+/VTNO9l/mw5+BN+3c/bY5qxQNbTRAeIDwQHiA8EB6Qm+7VnHZP46fdC5rl5ye7nteXprmrFQ9sNUF4gPBAeIDwQHhAbjqPl+J5SNc8p3qu9Wnn+p4637Piga0mIDwQHggPEB4ID8jQ83hPPafX9Ty6aefx0nRf5TTmeGCrCQgPhAcID4QHwgNu8pXlc7Pqc27V88ZTr981F+06jzftnJ4VD2w1AeGB8EB4gPBAeECW3auZYc8xy/JzaF33Q067P3PL3NKKB7aaIDxAeCA8QHggPCDN5/G65kJdz7vrmss9dV6X4jmbezUB4YHwQHiA8EB4gPAg7tXM5Dlb17mvrnN0p/4u25/jV/33ch4PbDUB4YHwQHiA8EB4QJbN8U7NeabNu7qep1c9h+w6v9d17tF5PLDVBIQHwgOEB8IDhAd5yPPx1n/gYc95y7Dzh3noOcPquaLzeGCrCQgPhAfCA4QHwgPSfB5vy32J756Xq75nsmsOVn1faPXvYdrz95zHA1tNQHggPEB4IDwQHpBl92pOu08yTefius77Vc8JM2weu+UeTise2GqC8ADhgfAA4YHwgAx9Pl7XvYVd73/aeb8tc8uuuWL157Xiga0mCA8QHggPEB4ID8jQOd4Wp87LVT+f7d3X7zqP1zW/PfXvVn8/Vjyw1QThAcID4QHCA+EBMcfLhPs5u57zVj1X7Hr/Xc8btOKBrSYgPBAeIDwQHggPyEPmeF33YVafu0vT8/Gmvc9pc7Zpzye04oGtJggPEB4IDxAeCA/4T6/rukbdN5gl8zrn5e75PXT9Hatf34oHtpogPEB4IDxAeCA8IIfneIAVD4QHCA+EBwgPhAfCA4QHwgOEB8IDhAfCA4QHwoMP9BeGm/rjQj0XKAAAAABJRU5ErkJggg==" alt="QR code" style="width:240px;max-width:80vw;image-rendering:pixelated">
+  <div class="sub" style="margin:10px 0 4px;word-break:break-all">kitesurfingant-ops.github.io/pp3-settings</div>
+  <div class="sub">Then add it to the Home Screen – see the operator guide.</div>
+  <div class="bar"><button id="qrClose" class="primary">Close</button></div>
 </div></div>
 
 <div id="busy" class="busy hidden">Saving…</div>
@@ -292,6 +302,7 @@ function show(view){
   $("backBtn").classList.toggle("hidden", view==="vList");
   $("logo").classList.toggle("hidden", view!=="vList");
   $("opBtn").classList.toggle("hidden", view!=="vList");
+  $("qrBtn").classList.toggle("hidden", view!=="vList");
   window.scrollTo(0,0);
 }
 
@@ -465,6 +476,9 @@ function goHome(){ current=null; edit=null; $("title").textContent="Product Sett
 $("backBtn").onclick=()=>{ if(!$("vEdit").classList.contains("hidden") && edit?.id) return openDetail(edit.id); goHome(); };
 $("newBtn").onclick=()=>openEdit(null);
 
+$("qrBtn").onclick=()=>$("qrModal").classList.remove("hidden");
+$("qrClose").onclick=()=>$("qrModal").classList.add("hidden");
+$("qrModal").onclick=e=>{ if(e.target.id==="qrModal") $("qrModal").classList.add("hidden"); };
 renderOp(); show("vList");
 if (MODE==="mcp") $("list").innerHTML=`<div class="empty">Connecting to Supabase…</div>`;
 loadList();
