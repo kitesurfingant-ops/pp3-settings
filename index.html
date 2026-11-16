@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <style>
   :root{
     --navy:#003f80; --navy2:#0a4f99; --nsblue:#005cb9; --sail:#f6f5f1; --white:#ffffff; --carbon:#24292e;
@@ -136,7 +137,9 @@
       <div class="cap-h">HMI screens – tap to enlarge</div>
       <div id="dPhotos" class="photos"></div>
     </div>
-    <div class="bar"><button id="editBtn" class="primary">Edit / add photos</button></div>
+    <div class="bar"><button id="pdfBtn" class="primary">📄 Run sheet (PDF)</button></div>
+    <div class="bar hidden" id="detBar"><a id="detLink" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:14px;border:1px solid var(--blue);border-radius:4px;color:var(--blue);font-weight:600;text-decoration:none">📊 Detailed run sheet – values read from photos</a></div>
+    <div class="bar"><button id="editBtn">Edit / add photos</button></div>
   </section>
 
   <section id="vEdit" class="hidden">
@@ -326,6 +329,8 @@ async function openDetail(id){
   $("dCode").textContent = p.code ? "Code: "+p.code : "No product code";
   $("dMeta").textContent = "Last updated "+fmtDT(p.updated_at)+(p.operator?" by "+p.operator:"");
   $("dNotes").textContent = p.notes || "—";
+  $("detBar").classList.toggle("hidden", !p.run_sheet_url); if(p.run_sheet_url) $("detLink").href = p.run_sheet_url;
+  $("pdfBtn").parentElement.classList.toggle("hidden", MODE!=="direct");
   $("dPhotos").innerHTML = p.photos.length ? p.photos.map((f,i)=>`
     <div class="ph"><img src="${photoSrc(f)}" data-i="${i}" alt="">
     <div class="cap">${esc(f.caption)||"<span class='sub'>Screen "+(i+1)+"</span>"}</div></div>`).join("")
@@ -336,6 +341,46 @@ async function openDetail(id){
   show("vDetail");
 }
 $("editBtn").onclick = ()=>openEdit(current);
+
+/* ---------- Run sheet PDF, built on the phone from this run's data + photos ---------- */
+const imgSize = src => new Promise(r=>{ const i=new Image(); i.onload=()=>r([i.naturalWidth,i.naturalHeight]); i.onerror=()=>r([4,3]); i.src=src; });
+$("pdfBtn").onclick = async()=>{
+  const p=current; if(!p) return;
+  if(!window.jspdf){ toast("PDF tool still loading – try again"); return; }
+  busy(true,"Building run sheet…");
+  try{
+    const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:"mm",format:"a4"});
+    const W=210,H=297,M=15;
+    const header=()=>{ doc.setFillColor(0,92,185); doc.rect(0,0,W,24,"F");
+      try{ doc.addImage($("logo").src,"PNG",M,4,16,16); }catch(e){}
+      doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(16); doc.text("PP3 RUN SHEET",M+21,12);
+      doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.text("North Sails Sri Lanka \u00b7 Pre Preg Line 3",M+21,18); doc.setTextColor(30); };
+    header(); let y=34;
+    const rows=[["Product",p.name],["Product / batch code",p.code||"\u2013"],["Run date",fmtD(p.run_date)],
+      ["Line speed",p.line_speed!=null?Number(p.line_speed).toFixed(2)+" m/min":"\u2013"],["Operator",p.operator||"\u2013"],["Last updated",fmtDT(p.updated_at)]];
+    rows.forEach(([k,v],i)=>{ if(i%2===0){ doc.setFillColor(229,240,251); doc.rect(M,y-5.5,W-2*M,8,"F"); }
+      doc.setFontSize(10); doc.setFont("helvetica","bold"); doc.text(k,M+2,y); doc.setFont("helvetica","normal"); doc.text(String(v),M+55,y); y+=8; });
+    y+=4; doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text("Notes",M,y); y+=6;
+    doc.setFont("helvetica","normal"); doc.setFontSize(10);
+    const lines=doc.splitTextToSize(p.notes||"\u2014",W-2*M); doc.text(lines,M,y); y+=lines.length*5+6;
+    if(p.run_sheet_url){ doc.setTextColor(0,92,185); doc.textWithLink("Detailed run sheet (values read from photos)",M,y,{url:p.run_sheet_url}); doc.setTextColor(30); y+=8; }
+    for(const [i,f] of p.photos.entries()){
+      const src=photoSrc(f); if(!src) continue;
+      const [iw,ih]=await imgSize(src); let w=W-2*M, h=w*ih/iw; if(h>118){ h=118; w=h*iw/ih; }
+      if(y+h+10>H-15){ doc.addPage(); header(); y=34; }
+      doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.text(f.caption||("Screen "+(i+1)),M,y);
+      doc.addImage(src,"JPEG",(W-w)/2,y+3,w,h); y+=h+12;
+    }
+    const n=doc.getNumberOfPages();
+    for(let i=1;i<=n;i++){ doc.setPage(i); doc.setFontSize(8); doc.setTextColor(110);
+      doc.text("PP3 Run Sheet \u00b7 "+p.name+" \u00b7 "+(p.run_date||""),M,H-8); doc.text("Page "+i+" of "+n,W-M,H-8,{align:"right"}); }
+    const name=("PP3 Run Sheet - "+p.name+" - "+(p.run_date||"")).replace(/[\\/:*?"<>|]/g,"-")+".pdf";
+    busy(false);
+    const blob=doc.output("blob"); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=name; a.target="_blank"; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch(e){ busy(false); console.error(e); toast("Couldn't build the PDF"); }
+};
 
 function openEdit(p){
   edit = { id:p?.id, photos:(p?.photos||[]).map(x=>({...x})), removed:[] };
